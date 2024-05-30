@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>predict</title>
+    <style>
+        h1 { font-size: 35px; }
+        #upper_block { margin-bottom: 0; }
+        #inner_block {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin-top: 10px;
+        }
+        #predict_top { text-align: center; margin-bottom: 0;}
+        #btn_back {
+            display: inline-block;
+            margin-left: 120px;
+            margin-bottom: 0;
+            padding: 10px;
+            justify-content: left;
+            text-align: center;
+            width: 80px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 40%;
+            margin-top: 3px;
+            justify-content: center;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 6px;
+            text-align: center;
+        }
+        th { background-color: #f2f2f2; }
+        td { font-size: 16px; }
+        .date_column { width: 20%; }
+        .result_column { width: 20%; }
+        #graph_container { margin-top: 0; justify-content: center; }
+        #prediction_graph { max-width: 80%; justify-content: center;}
+    </style>
+</head>
+<body>
+    <div id="upper_block">
+    <h1 id="predict_top">Prediction Results</h1>
+    {% load humanize %}
+
+    <button id="btn_back" onclick="goBack()">Back</button>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+    </div>
+    <div id="inner_block">
+        <div id="graph_container">
+        <img src="data:image/png;base64,{{ prediction_graph }}" alt="graph">
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th class="date_column">Date</th>
+                    <th class="result_column">Prediction</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for date, result in predictions|slice:'-5:' %}
+                    <tr>
+                        <td class="date_column">{{ date|date:"Y.m.d.D" }}</td>
+                        <td class="result_column">{{ result|floatformat:0|intcomma }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody> 
+        </table>
+    </div>
+</body>
+</html>

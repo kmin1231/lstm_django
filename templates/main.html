@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Price Prediction</title>
+    <style>
+        h1 { margin-top: 40px; }
+        body { text-align: center; }
+        #date { font-size: 16px; font-weight: bold; }
+        #btn_predict {
+            display: inline-block;
+            text-align: right;
+            padding: 10px;
+        }
+        #graph_ss { padding: 5px; padding-top: 0; }
+        #graph_title {
+            font-size: 20px;
+            font-weight: bold;
+            padding-bottom: 0;
+            padding-top: 5px; }
+    </style>
+</head>
+<body>
+    <h1>LSTM 모델을 이용한 주가 예측</h1>
+    <p id="date">Today: {{ today|date:"Y.m.d.D" }}</p>
+
+    <p id="graph_title">최근 삼성전자 실제 주가</p>
+
+    {% if ss_graph %}
+    <img id="graph_ss" src="data:image/png;base64,{{ ss_graph }}" alt="SS Graph">
+    {% endif %}
+    <button id="btn_predict" onclick="location.href='/lstm/predict'">Predict</button>
+
+</body>
+</html>
