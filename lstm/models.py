@@ -32,3 +32,13 @@ def load_ks(start_date, end_date):
             close = row['Close']
         )
         ks_price.save()
+
+
+class Prediction(models.Model):
+    date = models.DateField() 
+    actual = models.FloatField(null=True, blank=True)
+    prediction = models.FloatField(null=True, blank=True)
+    difference = models.FloatField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ['date']

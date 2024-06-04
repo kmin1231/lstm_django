@@ -1,14 +1,14 @@
 import os, io, base64,sys
-sys.path.append('C:\\Users\\user\\Desktop\\lstm0529\\lstm')
+sys.path.append('C:\\Users\\user\\Desktop\\lstm0601\\lstm')
 from django.shortcuts import render
 # from django.http import HttpResponse
-from .models import SS, KS, load_ss, load_ks
+from .models import SS, KS, load_ss, load_ks, Prediction
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from datetime import date, datetime, timedelta
 from django.conf import settings
-from .prediction import getprediction, predict_graph
+from .prediction import getprediction, predict_graph, history_data, calculate_accuracy, predict_start
 
 
 # def index(request):
@@ -25,6 +25,16 @@ def predict(request):
                'prediction_graph': predict_graph()}
     return render(request, 'predict.html', context)
 
+def history(request):
+    predictions = history_data(predict_start)
+    monthly_accuracy = calculate_accuracy(predictions)
+    predictions.sort(key=lambda x: x[0], reverse=True)
+    context = {
+        'predictions': predictions,
+        'monthly_accuracy': monthly_accuracy
+    }
+    return render(request, 'history.html', context)
+
 
 def plot_ss():
     today = date.today()
@@ -40,7 +50,7 @@ def plot_ss():
     close = [price.close for price in ss_prices]
 
     plt.figure(figsize=(7, 4))
-    plt.plot(dates, close, label='Close Price', color='blue')
+    plt.plot(dates, close, label='Close Price', color='#e35f62')
     plt.xlabel('Date')
     plt.ylabel('Close')
     # plt.title('최근 삼성전자 실제 주가')
@@ -67,15 +77,6 @@ def plot_ss():
     context = {'ss_graph': ss_graph, 'today': today}
     return ss_graph
     # return render(request, 'main.html', context)
-
-
-
-
-
-
-
-
-
 
 end_date = datetime.now().strftime('%Y-%m-%d')
 load_ss(start_date='2022-01-01', end_date=end_date)
