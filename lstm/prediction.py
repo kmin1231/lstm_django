@@ -95,26 +95,20 @@ def getprediction():
     return prediction_results
 
 def predict_graph():
-    prediction_results = getprediction()
-
     today = datetime.today().strftime('%Y-%m-%d')
+    # predict_start = '2024-04-01'
 
-    df_prediction = pd.DataFrame(prediction_results, columns=['Date', 'Prediction'])
-    df_prediction['Date'] = pd.to_datetime(df_prediction['Date'])
-    df_prediction.set_index('Date', inplace=True)
-
+    # Get actual data from the database
     ss_prices = SS.objects.filter(date__range=(predict_start, today)).order_by('date')
     dates = [price.date for price in ss_prices]
     close = [price.close for price in ss_prices]
 
     df_actual = pd.DataFrame({'Date': dates, 'Close': close})
+    df_actual['Date'] = pd.to_datetime(df_actual['Date'])
     df_actual.set_index('Date', inplace=True)
     df_actual = df_actual[~df_actual.index.duplicated(keep='first')]
 
-    # print("Actual Data Head:\n", df_actual.head())
-    # print("Prediction Data Head:\n", df_prediction.head())
-
-    plt.figure(figsize=(9, 5))
+    plt.figure(figsize=(8, 4))
 
     if not df_actual.empty:
         date_nums_actual = matplotlib.dates.date2num(df_actual.index)
@@ -123,6 +117,14 @@ def predict_graph():
         close_actual_smooth = splev(date_nums_actual_smooth, spl_actual)
         dates_actual_smooth = matplotlib.dates.num2date(date_nums_actual_smooth)
         plt.plot(dates_actual_smooth, close_actual_smooth, label='Actual', color='#1f77b4')
+
+    # Get prediction data from the database
+    predictions = Prediction.objects.filter(date__range=(predict_start, today)).order_by('date')
+    prediction_results = [(prediction.date, prediction.prediction) for prediction in predictions]
+
+    df_prediction = pd.DataFrame(prediction_results, columns=['Date', 'Prediction'])
+    df_prediction['Date'] = pd.to_datetime(df_prediction['Date'])
+    df_prediction.set_index('Date', inplace=True)
 
     if not df_prediction.empty:
         date_nums_prediction = matplotlib.dates.date2num(df_prediction.index)
@@ -147,6 +149,7 @@ def predict_graph():
     graph_img = base64.b64encode(img_data.read()).decode('utf-8')
 
     return graph_img
+
 
 def history_data(predict_start):
     today = datetime.today().strftime('%Y-%m-%d')
@@ -179,23 +182,53 @@ def history_data(predict_start):
     return prediction_data
 
 
-from collections import defaultdict
+# from collections import defaultdict
+
+# def calculate_accuracy(predictions):
+#     monthly_counts = defaultdict(lambda: {'good_predictions': 0, 'total_predictions': 0})
+    
+#     for i in range(1, len(predictions)):
+#         current_date, current_actual, current_prediction, current_difference = predictions[i]
+#         previous_date, previous_actual, _, _ = predictions[i - 1]
+
+#         if current_actual is not None and current_prediction is not None and previous_actual is not None and current_date.year == 2024 and current_date.month <= 5:
+#             predicted_direction = current_prediction - previous_actual
+#             actual_direction = current_actual - previous_actual
+
+#             if predicted_direction * actual_direction > 0: 
+#                 monthly_counts[current_date.strftime('%Y-%m')]['good_predictions'] += 1
+
+#             monthly_counts[current_date.strftime('%Y-%m')]['total_predictions'] += 1
+
+#     monthly_accuracy = {}
+#     for month, counts in monthly_counts.items():
+#         if counts['total_predictions'] > 0:
+#             monthly_accuracy[month] = (counts['good_predictions'] / counts['total_predictions']) * 100
+#         else:
+#             monthly_accuracy[month] = 0
+
+#     return monthly_accuracy
 
 def calculate_accuracy(predictions):
-    monthly_counts = defaultdict(lambda: {'good_predictions': 0, 'total_predictions': 0})
+    monthly_counts = {}
     
     for i in range(1, len(predictions)):
         current_date, current_actual, current_prediction, current_difference = predictions[i]
         previous_date, previous_actual, _, _ = predictions[i - 1]
 
         if current_actual is not None and current_prediction is not None and previous_actual is not None and current_date.year == 2024 and current_date.month <= 5:
+            month_key = current_date.strftime('%Y-%m')
+            
+            if month_key not in monthly_counts:
+                monthly_counts[month_key] = {'good_predictions': 0, 'total_predictions': 0}
+
             predicted_direction = current_prediction - previous_actual
             actual_direction = current_actual - previous_actual
 
             if predicted_direction * actual_direction > 0: 
-                monthly_counts[current_date.strftime('%Y-%m')]['good_predictions'] += 1
+                monthly_counts[month_key]['good_predictions'] += 1
 
-            monthly_counts[current_date.strftime('%Y-%m')]['total_predictions'] += 1
+            monthly_counts[month_key]['total_predictions'] += 1
 
     monthly_accuracy = {}
     for month, counts in monthly_counts.items():

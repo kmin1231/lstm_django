@@ -2,6 +2,7 @@ import os, io, base64,sys
 sys.path.append('C:\\Users\\user\\Desktop\\lstm0601\\lstm')
 from django.shortcuts import render
 # from django.http import HttpResponse
+from django.http import JsonResponse
 from .models import SS, KS, load_ss, load_ks, Prediction
 import matplotlib
 matplotlib.use('Agg')
@@ -81,3 +82,24 @@ def plot_ss():
 end_date = datetime.now().strftime('%Y-%m-%d')
 load_ss(start_date='2022-01-01', end_date=end_date)
 load_ks(start_date='2022-01-01', end_date=end_date)
+
+
+
+def get_prediction(request):
+    date_str = request.GET.get('date')
+    if not date_str:
+        return JsonResponse({'error': 'No date provided'}, status=400)
+
+    try:
+        date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        print(f"Parsed date: {date}")
+    except ValueError:
+        return JsonResponse({'error': 'Invalid date format'}, status=400)
+
+    try:
+        prediction_obj = Prediction.objects.get(date=date)
+        prediction = prediction_obj.prediction
+        print(f"Found prediction: {prediction}")
+        return JsonResponse({'date': date_str, 'prediction': prediction})
+    except Prediction.DoesNotExist:
+        return JsonResponse({'error': 'Prediction not found'}, status=404)
