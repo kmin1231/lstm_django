@@ -1,5 +1,5 @@
 import os, io, base64,sys
-sys.path.append('C:\\Users\\user\\Desktop\\lstm0601\\lstm')
+sys.path.append('C:\\Users\\min\\Desktop\\capstone_lstm\\lstm')
 from django.shortcuts import render
 # from django.http import HttpResponse
 from django.http import JsonResponse
@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 from datetime import date, datetime, timedelta
 from django.conf import settings
 from .prediction import getprediction, predict_graph, history_data, calculate_accuracy, predict_start
-
 
 # def index(request):
 #     return HttpResponse("testing...!")
@@ -84,22 +83,17 @@ load_ss(start_date='2022-01-01', end_date=end_date)
 load_ks(start_date='2022-01-01', end_date=end_date)
 
 
-
 def get_prediction(request):
-    date_str = request.GET.get('date')
-    if not date_str:
+    date = request.GET.get('date')
+    print('Requested date:', date)
+
+    if not date:
         return JsonResponse({'error': 'No date provided'}, status=400)
 
     try:
-        date = datetime.strptime(date_str, '%Y-%m-%d').date()
-        print(f"Parsed date: {date}")
-    except ValueError:
-        return JsonResponse({'error': 'Invalid date format'}, status=400)
-
-    try:
-        prediction_obj = Prediction.objects.get(date=date)
-        prediction = prediction_obj.prediction
-        print(f"Found prediction: {prediction}")
-        return JsonResponse({'date': date_str, 'prediction': prediction})
+        prediction = Prediction.objects.get(date=date)
+        print('Prediction:', prediction.prediction)
+        return JsonResponse({'date': prediction.date, 'prediction': prediction.prediction})
     except Prediction.DoesNotExist:
-        return JsonResponse({'error': 'Prediction not found'}, status=404)
+        print('Prediction not found for date:', date)
+        return JsonResponse({'error': 'Prediction not found for the given date'}, status=404)

@@ -23,4 +23,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('', views.index, name='index'),
     path('lstm/', include('lstm.urls')),
+    path('get_prediction/', views.get_prediction, name='get_prediction'),
 ]

@@ -18,7 +18,7 @@ from scipy.interpolate import splrep, splev
 predict_start = '2024-01-01'
 
 def getprediction():
-    model2 = load_model('C:\\Users\\user\\Desktop\\lstm0601\\lstm\\lstm_model.h5')
+    model2 = load_model('C:\\Users\\min\\Desktop\\capstone_lstm\\lstm\\lstm_model.h5')
 
     time_step = 10
     epochs = 100
@@ -137,10 +137,15 @@ def predict_graph():
     plt.xlabel('Date')
     plt.ylabel('Price')
     plt.xticks(rotation=30)
-    plt.yticks(np.arange(74000, 82000, 1000)) 
+    # plt.yticks(np.arange(74000, 82000, 1000)) 
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
+
+    min_value = min(df_actual['Close'].min(), df_prediction['Prediction'].min())
+    max_value = max(df_actual['Close'].max(), df_prediction['Prediction'].max())
+    interval = 2000
+    plt.yticks(np.arange(int(min_value), int(max_value) + interval, interval))
 
     img_data = io.BytesIO()
     plt.savefig(img_data, format='png')
@@ -182,53 +187,23 @@ def history_data(predict_start):
     return prediction_data
 
 
-# from collections import defaultdict
-
-# def calculate_accuracy(predictions):
-#     monthly_counts = defaultdict(lambda: {'good_predictions': 0, 'total_predictions': 0})
-    
-#     for i in range(1, len(predictions)):
-#         current_date, current_actual, current_prediction, current_difference = predictions[i]
-#         previous_date, previous_actual, _, _ = predictions[i - 1]
-
-#         if current_actual is not None and current_prediction is not None and previous_actual is not None and current_date.year == 2024 and current_date.month <= 5:
-#             predicted_direction = current_prediction - previous_actual
-#             actual_direction = current_actual - previous_actual
-
-#             if predicted_direction * actual_direction > 0: 
-#                 monthly_counts[current_date.strftime('%Y-%m')]['good_predictions'] += 1
-
-#             monthly_counts[current_date.strftime('%Y-%m')]['total_predictions'] += 1
-
-#     monthly_accuracy = {}
-#     for month, counts in monthly_counts.items():
-#         if counts['total_predictions'] > 0:
-#             monthly_accuracy[month] = (counts['good_predictions'] / counts['total_predictions']) * 100
-#         else:
-#             monthly_accuracy[month] = 0
-
-#     return monthly_accuracy
+from collections import defaultdict
 
 def calculate_accuracy(predictions):
-    monthly_counts = {}
+    monthly_counts = defaultdict(lambda: {'good_predictions': 0, 'total_predictions': 0})
     
     for i in range(1, len(predictions)):
         current_date, current_actual, current_prediction, current_difference = predictions[i]
         previous_date, previous_actual, _, _ = predictions[i - 1]
 
         if current_actual is not None and current_prediction is not None and previous_actual is not None and current_date.year == 2024 and current_date.month <= 5:
-            month_key = current_date.strftime('%Y-%m')
-            
-            if month_key not in monthly_counts:
-                monthly_counts[month_key] = {'good_predictions': 0, 'total_predictions': 0}
-
             predicted_direction = current_prediction - previous_actual
             actual_direction = current_actual - previous_actual
 
             if predicted_direction * actual_direction > 0: 
-                monthly_counts[month_key]['good_predictions'] += 1
+                monthly_counts[current_date.strftime('%Y-%m')]['good_predictions'] += 1
 
-            monthly_counts[month_key]['total_predictions'] += 1
+            monthly_counts[current_date.strftime('%Y-%m')]['total_predictions'] += 1
 
     monthly_accuracy = {}
     for month, counts in monthly_counts.items():
@@ -238,3 +213,34 @@ def calculate_accuracy(predictions):
             monthly_accuracy[month] = 0
 
     return monthly_accuracy
+
+
+# def calculate_accuracy(predictions):
+#     monthly_counts = {}
+    
+#     for i in range(1, len(predictions)):
+#         current_date, current_actual, current_prediction, current_difference = predictions[i]
+#         previous_date, previous_actual, _, _ = predictions[i - 1]
+
+#         if current_actual is not None and current_prediction is not None and previous_actual is not None and current_date.year == 2024 and current_date.month <= 5:
+#             month_key = current_date.strftime('%Y-%m')
+            
+#             if month_key not in monthly_counts:
+#                 monthly_counts[month_key] = {'good_predictions': 0, 'total_predictions': 0}
+
+#             predicted_direction = current_prediction - previous_actual
+#             actual_direction = current_actual - previous_actual
+
+#             if predicted_direction * actual_direction > 0: 
+#                 monthly_counts[month_key]['good_predictions'] += 1
+
+#             monthly_counts[month_key]['total_predictions'] += 1
+
+#     monthly_accuracy = {}
+#     for month, counts in monthly_counts.items():
+#         if counts['total_predictions'] > 0:
+#             monthly_accuracy[month] = (counts['good_predictions'] / counts['total_predictions']) * 100
+#         else:
+#             monthly_accuracy[month] = 0
+
+#     return monthly_accuracy

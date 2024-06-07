@@ -36,13 +36,23 @@
         td { font-size: 16px; border: 1px solid black; }
         .date_column { width: 20%; }
         .result_column { width: 20%; }
-        #graph_container { margin-top: 0; justify-content: center; margin-bottom: 0px; }
-        #prediction_graph { max-width: 80%; height: 80%; justify-content: center; margin-top: 0; }
+        #graph_container { margin-top: 0; justify-content: center; margin-bottom: 5px; }
+        #prediction_graph { max-width: 80%; height: 90%; justify-content: center; margin-top: 0; }
+        .navbar-brand img {
+            height: 40px;
+            margin-right: 5px;
+        }
+        .date { font-size: 18px; }
+        .prediction { font-size: 35px; font-weight: bold; }
     </style>
 </head>
 <body>
+    {% load static %}
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="/">LSTM</a>
+        <a class="navbar-brand" href="/">
+            <img src="{% static 'stock.png' %}" alt="Logo">
+            LSTM
+        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -68,50 +78,53 @@
         <div id="graph_container">
             <img src="data:image/png;base64,{{ prediction_graph }}" alt="graph">
         </div>
-        <div class="calendar_view" style="margin:3px; margin-top: 5px; display: flex;">
+        <div class="calendar_view" style="margin:3px; margin-top: 25px; display: flex;">
             <input type="date" id="date" class="form-control" style="width: 200px; margin-right:10px;">
-            <button id="btn_predict" class="btn btn-primary ml-auto" onclick="getPrediction()">Get Prediction</button>
+            <button id="btn_predict" class="btn btn-primary ml-auto" style="margin-top: 10px;" onclick="getPrediction()">Get Prediction</button>
         </div>
         <div id="result" style="margin-top: 20px;"></div>
 
 
-    <script>
-        async function getPrediction() {
-            const date = document.getElementById('date').value;
-            if (!date) {
-                alert('Please select a date.');
-                return;
-            }
+        <script>
+            async function getPrediction() {
+                const date = document.getElementById('date').value;
+                console.log('Selected date:', date);
         
-            try {
-                const response = await fetch(`/get_prediction/?date=${date}`);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                if (!date) {
+                    alert('Please select a date.');
+                    return;
                 }
-                const data = await response.json();
-                if (data.error) {
-                    document.getElementById('result').textContent = `Error: ${data.error}`;
-                } else {
-                    const prediction = data.prediction;
-                    if (prediction !== undefined) {
-                        document.getElementById('result').textContent = `Prediction for ${date}: ${prediction}`;
-                    } else {
-                        document.getElementById('result').textContent = `Prediction not available for ${date}`;
+        
+                try {
+                    const response = await fetch(`/get_prediction/?date=${date}`);
+                    // console.log('Response status:', response.status);
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
                     }
+        
+                    const data = await response.json();
+                    // console.log('Response data:', data);
+        
+                    if (data.error) {
+                        document.getElementById('result').textContent = `Error: ${data.error}`;
+                    } else {
+                        const prediction = data.prediction;
+                        if (prediction !== undefined) {
+                            // document.getElementById('result').textContent = `Prediction for ${date}: ${parseInt(prediction)}`;
+                            document.getElementById('result').innerHTML = `<span class="date">Prediction for ${date}</span>:   <span class="prediction">${parseInt(prediction).toLocaleString()}</span>`;
+
+                        } else {
+                            document.getElementById('result').textContent = `Prediction not available for ${date}`;
+                        }
+                    }
+                } catch (error) {
+                    console.error('There has been a problem with your fetch operation:', error);
+                    document.getElementById('result').textContent = 'Error fetching prediction.';
                 }
-            } catch (error) {
-                console.error('There has been a problem with your fetch operation:', error);
-                document.getElementById('result').textContent = 'Error fetching prediction.';
             }
-        }
-    </script>
-    <script>
-            
-        function goBack() {
-            window.history.back();
-        }
-    </script>
-    
+        </script>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

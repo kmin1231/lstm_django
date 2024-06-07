@@ -35,10 +35,7 @@ def load_ks(start_date, end_date):
 
 
 class Prediction(models.Model):
-    date = models.DateField() 
-    actual = models.FloatField(null=True, blank=True)
+    date = models.DateField(unique=True) 
+    actual = models.FloatField()
     prediction = models.FloatField(null=True, blank=True)
     difference = models.FloatField(null=True, blank=True)
-
-    class Meta:
-        unique_together = ['date']
