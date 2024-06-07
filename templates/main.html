@@ -19,7 +19,7 @@
             margin-top: 0;
             padding: 6px 15px;
             background-color: #f8f9fa;
-            border: 2px solid #000000;
+            border: 2px solid #000000; 
             border-radius: 4px;
             color: black;
             cursor: pointer;
@@ -39,7 +39,7 @@
         }
         @media (min-width: 992px) {
             .navbar-nav {
-                flex-direction: row;
+                flex-direction: row; /* 큰 화면에서는 가로로 정렬 */
             }
         }
         #overlay {
@@ -58,13 +58,21 @@
             display: none;
         }
         .navbar-nav .nav-item .nav-link:hover {
-            background-color: #e2e6ea; /* 원하는 색상으로 변경 */
+            background-color: #e2e6ea; 
+        }
+        .navbar-brand img {
+            height: 40px; /* 로고 크기 */
+            margin-right: 5px; /* 로고 <-> 텍스트 간격 */
         }
     </style>
 </head>
 <body>
+    {% load static %}
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="/">LSTM</a>
+        <a class="navbar-brand" href="/">
+            <img src="{% static 'stock.png' %}" alt="Logo">
+            LSTM
+        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -104,7 +112,7 @@
             document.getElementById('overlay').style.display = 'flex';
             setTimeout(function() {
                 window.location.href = '/lstm/predict/';
-            }, 100);
+            }, 100); 
         }
     </script>
 
