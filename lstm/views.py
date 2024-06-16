@@ -1,5 +1,5 @@
 import os, io, base64,sys
-sys.path.append('C:\\Users\\min\\Desktop\\capstone_lstm\\lstm')
+sys.path.append('C:\\Users\\min\\Desktop\\lstm0608\\lstm')
 from django.shortcuts import render
 # from django.http import HttpResponse
 from django.http import JsonResponse
@@ -83,7 +83,7 @@ load_ss(start_date='2022-01-01', end_date=end_date)
 load_ks(start_date='2022-01-01', end_date=end_date)
 
 
-def get_prediction(request):
+def calendar_prediction(request):
     date = request.GET.get('date')
     print('Requested date:', date)
 

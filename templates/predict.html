@@ -80,13 +80,13 @@
         </div>
         <div class="calendar_view" style="margin:3px; margin-top: 25px; display: flex;">
             <input type="date" id="date" class="form-control" style="width: 200px; margin-right:10px;">
-            <button id="btn_predict" class="btn btn-primary ml-auto" style="margin-top: 10px;" onclick="getPrediction()">Get Prediction</button>
+            <button id="btn_predict" class="btn btn-primary ml-auto" style="margin-top: 10px;" onclick="dateToPrediction()">Get Prediction</button>
         </div>
         <div id="result" style="margin-top: 20px;"></div>
 
 
         <script>
-            async function getPrediction() {
+            async function dateToPrediction() {
                 const date = document.getElementById('date').value;
                 console.log('Selected date:', date);
         
@@ -96,7 +96,7 @@
                 }
         
                 try {
-                    const response = await fetch(`/get_prediction/?date=${date}`);
+                    const response = await fetch(`/calendar_prediction/?date=${date}`);
                     // console.log('Response status:', response.status);
                     
                     if (!response.ok) {
