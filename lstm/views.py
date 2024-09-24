@@ -1,5 +1,5 @@
 import os, io, base64,sys
-sys.path.append('C:\\Users\\min\\Desktop\\lstm0608\\lstm')
+sys.path.append('C:\\Users\\min\\Desktop\\lstm\\lstm')
 from django.shortcuts import render
 # from django.http import HttpResponse
 from django.http import JsonResponse
