@@ -1,1 +1,2 @@
-lstm/somefile.py linguist-detectable=false
+**/migrations/** linguist-vendored
+lstm/get-pip.py linguist-detectable=false
