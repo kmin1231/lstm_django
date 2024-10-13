@@ -1,2 +1,2 @@
-**/migrations/** linguist-vendored
+**/migrations/** linguist-detectable=false
 lstm/get-pip.py linguist-detectable=false
