@@ -1,6 +1,7 @@
-# `Python` Prediction on Stock Price Movement with LSTM Model
+## `Python` Prediction on Stock Price Movement with LSTM Model
 <i>[CSE406-12] KHU Capstone Design</i> (team project)
 
+<br>
 
 ## Project Overview
 - This project utilizes the **`LSTM`** (Long Short-Term Memory) model, a deep learning technique under the **RNN** (Recurrent Neural Network) family, to predict **stock price movements**.
