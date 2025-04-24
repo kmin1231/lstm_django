@@ -1,2 +1,4 @@
 **/migrations/** linguist-detectable=false
 lstm/get-pip.py linguist-detectable=false
+*.css linguist-vendored
+*.html linguist-vendored
